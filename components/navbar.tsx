@@ -1,10 +1,23 @@
+"use client";
+
 import { Briefcase } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { getSession } from "@/lib/auth/auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "./ui/avatar";
+import { signOut } from "better-auth/api";
+import SignOutButton from "./sign-out-btn";
+import { useSession } from "@/lib/auth/auth-client";
 
-export default async function Navbar() {
-  const session = await getSession();
+export default function Navbar() {
+  const { data: session } = useSession();
   return (
     <nav className="border-b border-gray-200 bg-white">
       <div className="container mx-auto flex h-16 items-center px-4 justify-between">
@@ -19,10 +32,37 @@ export default async function Navbar() {
           {session?.user ? (
             <>
               <Link href="/dashboard">
-                <Button variant="ghost" className="text-gray-700 hover:text-black">
+                <Button
+                  variant="ghost"
+                  className="text-gray-700 hover:text-black"
+                >
                   Dashboard
                 </Button>
               </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Button variant="ghost" className="rounded-full p-0">
+                    <Avatar>
+                      <AvatarFallback className="bg-primary text-white">
+                        {session.user.name ? [0] : "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {session.user.name}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {session.user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <SignOutButton />
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <>
