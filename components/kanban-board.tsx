@@ -20,6 +20,7 @@ import {
 import { Button } from "./ui/button";
 import CreateJobApplicationDialog from "./create-job-dialog";
 import JobApplicationCard from "./job-application-card";
+import { useBoards } from "@/lib/hooks/useBoards";
 
 interface KanbanBoardProps {
   board: Board;
@@ -64,7 +65,8 @@ function DroppableColumn({
   boardId: string;
   sortedColumns: Column[];
 }) {
-    const sortedJobs = column.jobApplications.sort((a, b) => a.order - b.order) || [];
+  const sortedJobs =
+    column.jobApplications.sort((a, b) => a.order - b.order) || [];
   return (
     <>
       <Card className="min-w-[300px] flex-shrink-0 shadow-md p-0">
@@ -99,9 +101,13 @@ function DroppableColumn({
         </CardHeader>
         <CardContent className="space-y-2 pt-4 bg-gray-50/50 min-h-[400px] rounded-b-lg">
           {/* Render job application cards here */}
-            {sortedJobs.map((job,key) => (
-                <SortableJobCard key={key} job={{...job, columnId: job.columnId || column._id}} columns={sortedColumns} />
-            ))}
+          {sortedJobs.map((job, key) => (
+            <SortableJobCard
+              key={key}
+              job={{ ...job, columnId: job.columnId || column._id }}
+              columns={sortedColumns}
+            />
+          ))}
 
           <CreateJobApplicationDialog columnId={column._id} boardId={boardId} />
         </CardContent>
@@ -110,23 +116,24 @@ function DroppableColumn({
   );
 }
 
-function SortableJobCard({job, columns} : {job: any, columns: Column[]}) {
-    return (
-        <div>
-            <JobApplicationCard job={job} columns={columns} />
-        </div>
-    )
+function SortableJobCard({ job, columns }: { job: any; columns: Column[] }) {
+  return (
+    <div>
+      <JobApplicationCard job={job} columns={columns} />
+    </div>
+  );
 }
 
 export default function KanbanBoard({ board, userId }: KanbanBoardProps) {
-  const boardColumns = board.columns;
-      const sortedColumns = boardColumns?.sort((a, b) => a.order - b.order) || []
+  const {columns,moveJob} = useBoards(board);
+
+  const sortedColumns = columns?.sort((a, b) => a.order - b.order) || [];
 
   return (
     <>
       <div>
         <div>
-          {boardColumns.map((col, index) => {
+          {columns.map((col, index) => {
             const config = COLUMN_CONFIG[index] || {
               color: "bg-gray-500",
               icon: <Calendar className="h-4 w-4" />,
