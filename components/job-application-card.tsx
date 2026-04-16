@@ -1,3 +1,4 @@
+"use client";
 import { Column, JobApplication } from "@/lib/models/models.types";
 import { Card, CardContent } from "./ui/card";
 import { Edit2, ExternalLink, MoreVertical, Trash2 } from "lucide-react";
@@ -8,7 +9,21 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { updateJobApplication } from "@/lib/actions/job-applications";
+import { deleteJobApplication, updateJobApplication } from "@/lib/actions/job-applications";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { useState } from "react";
+import column from "@/lib/models/column";
 
 interface JobApplicationCardProps {
   job: JobApplication;
@@ -19,9 +34,21 @@ export default function JobApplicationCard({
   job,
   columns,
 }: JobApplicationCardProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    company: job.company,
+    position: job.position,
+    location: job.location || "",
+    notes: job.notes || "",
+    salary: job.salary || "",
+    jobUrl: job.jobUrl || "",
+    columnId: job.columnId || "",
+    tags: job.tags?.join(", ") || "",
+    description: job.description || "",
+  });
 
   async function handleMove(newColumnId: string) {
-    try{
+    try {
       const result = await updateJobApplication(job._id, {
         columnId: newColumnId,
       });
@@ -30,19 +57,62 @@ export default function JobApplicationCard({
     }
   }
 
+  async function handleUpdate(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      const result = await updateJobApplication(job._id, {
+        ...formData,
+        tags: formData.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter((tag) => tag.length > 0),
+      });
+
+      if (!result.error) {
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error("Failed to move job application:", error);
+    }
+  }
+
+  async function handleDelete() {
+
+    try {
+      const result = await deleteJobApplication(job._id);
+
+      if (result.error) {
+        console.error("Failed to delete job application:", result.error);
+      }
+    } catch (error) {
+      console.error("Failed to delete job application:", error);
+    }
+  }
+
   return (
     <>
       <Card className="cursor-pointer transition-shadow hover:shadow-lg bg-white group shadow-sm">
-        <CardContent  className="p-4">
+        <CardContent className="p-4">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-sm mb-1">{job.position}</h3>
-              <p className="text-xs text-muted-foreground mb-2">{job.company}</p>
-              {job.description && <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{job.description}</p>}
+              <p className="text-xs text-muted-foreground mb-2">
+                {job.company}
+              </p>
+              {job.description && (
+                <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
+                  {job.description}
+                </p>
+              )}
               {job.tags && job.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-2">
                   {job.tags.map((tag, key) => (
-                    <span key={key}  className="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">{tag}</span>
+                    <span
+                      key={key}
+                      className="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                    >
+                      {tag}
+                    </span>
                   ))}
                 </div>
               )}
@@ -52,7 +122,7 @@ export default function JobApplicationCard({
                   href={job.jobUrl}
                   target="_blank"
                   onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1"
+                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1"
                 >
                   <ExternalLink className="h-3 w-3" />
                 </a>
@@ -66,7 +136,7 @@ export default function JobApplicationCard({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setIsEditing(true)}>
                     <Edit2 className="mr-2 h-4 w-4" /> Edit
                   </DropdownMenuItem>
                   {columns.length > 1 && (
@@ -74,14 +144,17 @@ export default function JobApplicationCard({
                       {columns
                         .filter((c) => c._id !== job.columnId)
                         .map((col, key) => (
-                          <DropdownMenuItem key={key} onClick={() => handleMove(col._id)}>
+                          <DropdownMenuItem
+                            key={key}
+                            onClick={() => handleMove(col._id)}
+                          >
                             Move to {col.name}
                           </DropdownMenuItem>
                         ))}
                     </>
                   )}
 
-                  <DropdownMenuItem className="text-destructive">
+                  <DropdownMenuItem className="text-destructive" onClick={handleDelete}>
                     <Trash2 className="mr-2 h-4 w-4" /> Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -90,6 +163,122 @@ export default function JobApplicationCard({
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add Job Application</DialogTitle>
+            <DialogDescription>Track a new job application</DialogDescription>
+          </DialogHeader>
+          <form className="space-y-4" onSubmit={handleUpdate}>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="company">Company *</Label>
+                  <Input
+                    id="company"
+                    required
+                    value={formData.company}
+                    onChange={(e) =>
+                      setFormData({ ...formData, company: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="position">Position *</Label>
+                  <Input
+                    id="position"
+                    required
+                    value={formData.position}
+                    onChange={(e) =>
+                      setFormData({ ...formData, position: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location *</Label>
+                  <Input
+                    id="location"
+                    required
+                    value={formData.location}
+                    onChange={(e) =>
+                      setFormData({ ...formData, location: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="salary">Salary *</Label>
+                  <Input
+                    id="salary"
+                    placeholder="e.g., $100k - $150k"
+                    value={formData.salary}
+                    onChange={(e) =>
+                      setFormData({ ...formData, salary: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="jobUrl">Job URL</Label>
+                <Input
+                  id="jobUrl"
+                  placeholder="https://..."
+                  value={formData.jobUrl}
+                  onChange={(e) =>
+                    setFormData({ ...formData, jobUrl: e.target.value })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="tags">Tags (comma-separated)</Label>
+                <Input
+                  id="tags"
+                  placeholder="e.g., Python, React, etc."
+                  value={formData.tags}
+                  onChange={(e) =>
+                    setFormData({ ...formData, tags: e.target.value })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  rows={3}
+                  placeholder="Brief description of the job..."
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="notes"
+                  rows={3}
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditing(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Save Changes</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

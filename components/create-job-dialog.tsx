@@ -16,7 +16,7 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { useState } from "react";
 import { createJobApplication } from "@/lib/actions/job-applications";
-import { set } from "mongoose";
+import column from "@/lib/models/column";
 
 interface CreateJobApplicationDialogProps {
   columnId: string;
@@ -30,6 +30,7 @@ const INITIAL_FORM_DATA = {
     notes: "",
     salary: "",
     jobUrl: "",
+    columnId: "",
     tags: "",
     description: "",
 };
@@ -66,7 +67,6 @@ export default function CreateJobApplicationDialog({
     }
   }
   return (
-    <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger>
           <Button variant="outline">
@@ -188,6 +188,5 @@ export default function CreateJobApplicationDialog({
           </form>
         </DialogContent>
       </Dialog>
-    </>
   );
 }
