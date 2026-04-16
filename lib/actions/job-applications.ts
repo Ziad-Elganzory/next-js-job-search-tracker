@@ -289,3 +289,30 @@ export async function deleteJobApplication(id: string) {
     success: true,
   };
 }
+
+export async function deleteColumn(id: string) {
+  const session = await getSession();
+  
+  if (!session?.user) {
+    return {
+      error: "Unauthorized",
+    };
+  }
+
+  const column = await Column.findById(id);
+  
+  if (!column) {
+    return {
+      error: "Column not found",
+    };
+  }
+
+  await JobApplication.deleteMany({ columnId: id });
+  await Column.findByIdAndDelete(id);
+
+  revalidatePath("/dashboard");
+  
+  return {
+    success: true,
+  };
+}

@@ -28,7 +28,7 @@ import column from "@/lib/models/column";
 interface JobApplicationCardProps {
   job: JobApplication;
   columns: Column[];
-  dragHandleProps: any;
+  dragHandleProps?: any;
 }
 
 export default function JobApplicationCard({
