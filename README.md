@@ -35,7 +35,13 @@ npm install
 
 ### 2) Create environment file
 
-Create `.env.local` in the project root:
+Copy the example env file:
+
+```bash
+cp .env.example .env.local
+```
+
+Then update `.env.local` with your values:
 
 ```bash
 MONGODB_URI=
