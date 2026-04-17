@@ -1,7 +1,7 @@
-import KanbanBoard from "@/components/kanban-board";
 import { getSession } from "@/lib/auth/auth";
 import connectDB from "@/lib/db";
 import { Board } from "@/lib/models";
+import KanbanBoard from "@/components/kanban-board";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 

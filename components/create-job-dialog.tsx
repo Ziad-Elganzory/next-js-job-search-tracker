@@ -16,7 +16,6 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { useState } from "react";
 import { createJobApplication } from "@/lib/actions/job-applications";
-import column from "@/lib/models/column";
 
 interface CreateJobApplicationDialogProps {
   columnId: string;
@@ -68,7 +67,7 @@ export default function CreateJobApplicationDialog({
   }
   return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger>
+        <DialogTrigger asChild>
           <Button variant="outline">
             <Plus />
             Add Job

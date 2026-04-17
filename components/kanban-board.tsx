@@ -38,7 +38,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { deleteColumn } from "@/lib/actions/job-applications";
 
 interface KanbanBoardProps {
@@ -200,7 +200,12 @@ function SortableJobCard({ job, columns }: { job: any; columns: Column[] }) {
 
 export default function KanbanBoard({ board, userId }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const { columns, moveJob } = useBoards(board);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const sortedColumns = columns?.sort((a, b) => a.order - b.order) || [];
   const sensors = useSensors(
@@ -314,6 +319,10 @@ export default function KanbanBoard({ board, userId }: KanbanBoardProps) {
     sortedColumns
       .flatMap((col) => col.jobApplications || [])
       .find((job) => job._id === activeId) || null;
+
+  if (!isMounted) {
+    return <p>Loading board...</p>;
+  }
 
   return (
     <DndContext
