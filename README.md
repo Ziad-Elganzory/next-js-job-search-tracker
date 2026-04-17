@@ -1,51 +1,134 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Job Application Tracker
 
-## Getting Started
+A full-stack web app for managing your job hunt with a Kanban workflow.
 
-First, run the development server:
+Users can sign up, get an automatically created board, and track applications through stages like Wish List, Applied, Interviewing, Offers, and Rejected.
+
+## Live Demo
+
+[https://job-tracker-taupe-omega.vercel.app](https://job-tracker-taupe-omega.vercel.app)
+
+## Features
+
+- Email/password authentication
+- Auto-created personal board for each new user
+- Track applications by stage (Wish List -> Applied -> Interviewing -> Offers -> Rejected)
+- Kanban-style workflow for organizing progress
+
+## Tech Stack
+
+- Next.js 16
+- React 19 + TypeScript
+- MongoDB + Mongoose
+- Better Auth
+- Tailwind CSS + shadcn/ui
+
+## Run Locally (Full Setup)
+
+### 1) Clone and install
+
+```bash
+git clone <your-repo-url>
+cd job-application-tracker
+npm install
+```
+
+### 2) Create environment file
+
+Create `.env.local` in the project root:
+
+```bash
+MONGODB_URI=
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### 3) Set up MongoDB
+
+You can use either MongoDB Atlas (cloud) or local MongoDB.
+
+#### Option A: MongoDB Atlas (recommended)
+
+1. Create a free cluster in [MongoDB Atlas](https://www.mongodb.com/atlas).
+2. Create a database user.
+3. In **Network Access**, allow your current IP.
+4. Get connection string and set:
+   - `MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<db-name>`
+5. Replace `<db-name>` with something like `job-board`.
+
+#### Option B: Local MongoDB
+
+If MongoDB runs locally on your machine:
+
+```bash
+MONGODB_URI=mongodb://127.0.0.1:27017/job-board
+```
+
+### 4) Generate auth secret
+
+Set `BETTER_AUTH_SECRET` to a long random string (at least 32 chars).
+
+Example using Node:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+### 5) Start the app
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Open the app and click **Start For Free**.
+2. Create an account.
+3. Sign in to access your board.
+4. Add and manage job applications across stages.
 
-## SEO Configuration
+## Available Scripts
 
-Set your canonical site URL so metadata, `robots.txt`, and `sitemap.xml` use production URLs:
+- `npm run dev` - start local development server
+- `npm run build` - production build
+- `npm run start` - run production build
+- `npm run lint` - run ESLint
+- `npm run seed` - run seed script
 
-```bash
-NEXT_PUBLIC_APP_URL=https://your-domain.com
-```
+## SEO Endpoints
 
-After deployment, verify:
+- `/robots.txt`
+- `/sitemap.xml`
+- `/opengraph-image`
 
-- `https://your-domain.com/robots.txt`
-- `https://your-domain.com/sitemap.xml`
+## Troubleshooting
 
-Submit the sitemap in [Google Search Console](https://search.google.com/search-console/about) and monitor indexing coverage.
+- **Database connection fails**
+  - Check `MONGODB_URI` format
+  - Atlas: ensure your IP is allowed
+  - Atlas: confirm DB user/password are correct
+- **Auth redirect/session issues**
+  - Confirm `BETTER_AUTH_URL` and `NEXT_PUBLIC_BETTER_AUTH_URL` are both `http://localhost:3000` in local setup
+- **Wrong canonical/sitemap domain**
+  - Set `NEXT_PUBLIC_APP_URL=http://localhost:3000` locally
 
-## Learn More
+## How to Use (Live Demo)
 
-To learn more about Next.js, take a look at the following resources:
+1. Open the live link.
+2. Create an account from the **Start For Free** / **Sign Up** button.
+3. Log in and you will get your personal **Job Hunt** board automatically.
+4. Add job applications and organize them by stage:
+   - Wish List
+   - Applied
+   - Interviewing
+   - Offers
+   - Rejected
+5. Update your applications as your process moves forward.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT (or update this section with your preferred license).
