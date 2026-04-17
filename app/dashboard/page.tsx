@@ -4,6 +4,16 @@ import { Board } from "@/lib/models";
 import KanbanBoard from "@/components/kanban-board";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Your private job application tracking dashboard.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 async function getBoard(userId: string) {
   "use cache";

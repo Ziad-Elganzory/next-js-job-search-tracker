@@ -34,7 +34,7 @@ export default function ImageTabs() {
                 {activeTab === "organize" && (
                   <Image
                     src="/hero-images/hero1.png"
-                    alt="Organize Applications"
+                    alt="Kanban view showing organized job applications by stage"
                     width={1200}
                     height={800}
                   />
@@ -42,7 +42,7 @@ export default function ImageTabs() {
                 {activeTab === "hired" && (
                   <Image
                     src="/hero-images/hero2.png"
-                    alt="Get Hired"
+                    alt="Dashboard view highlighting interview progress toward an offer"
                     width={1200}
                     height={800}
                   />
@@ -50,7 +50,7 @@ export default function ImageTabs() {
                 {activeTab === "boards" && (
                   <Image
                     src="/hero-images/hero3.png"
-                    alt="Manage Boards"
+                    alt="Board management screen for multiple job tracking workflows"
                     width={1200}
                     height={800}
                   />

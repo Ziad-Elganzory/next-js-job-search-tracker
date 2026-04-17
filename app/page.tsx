@@ -2,10 +2,42 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Briefcase, CheckCircle2, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import ImageTabs from "@/components/image-tabs";
+import type { Metadata } from "next";
+
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+export const metadata: Metadata = {
+  title: "Track Job Applications Better",
+  description:
+    "A job application tracker that helps you organize applications, monitor interview stages, and stay focused throughout your job search.",
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default function Home() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Job Application Tracker",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    description:
+      "Track job applications using a Kanban board workflow from applied to offer.",
+    url: siteUrl,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <main className="flex-1">
         {/* Hero Section */}
         <section className="container mx-auto px-4 py-32">
@@ -26,6 +58,9 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">
                 Free forever. No credit card required.
               </p>
+              <Link href="/sign-in" className="text-sm font-medium text-primary hover:underline">
+                Already have an account? Sign in
+              </Link>
             </div>
           </div>
         </section>
